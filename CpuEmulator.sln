@@ -4,5 +4,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CpuEmulator", "src\CpuEmula
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CpuEmulator.App", "src\CpuEmulator.App\CpuEmulator.App.csproj", "{A2222222-2222-2222-2222-222222222222}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CpuEmulator.Tests", "tests\CpuEmulator.Tests\CpuEmulator.Tests.csproj", "{A3333333-3333-3333-3333-333333333333}"
+EndProject
 Global
 EndGlobal
