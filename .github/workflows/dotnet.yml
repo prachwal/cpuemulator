@@ -16,10 +16,16 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore src/CpuEmulator.App/CpuEmulator.App.csproj
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build src/CpuEmulator.App/CpuEmulator.App.csproj --configuration Release
 
-      - name: Test
-        run: dotnet test --no-build
+      - name: Run tests
+        run: dotnet run --project tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj
+
+      - name: Upload junit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results
+          path: test-results/junit.xml
