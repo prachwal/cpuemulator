@@ -16,16 +16,25 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore src/CpuEmulator.App/CpuEmulator.App.csproj
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build src/CpuEmulator.App/CpuEmulator.App.csproj --configuration Release
+        run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet run --project tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj
+      - name: Test
+        run: dotnet test tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj --configuration Release --no-build --logger trx --results-directory TestResults
 
-      - name: Upload junit results
-        uses: actions/upload-artifact@v4
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
         with:
-          name: junit-results
-          path: test-results/junit.xml
+          name: dotnet-tests
+          path: TestResults/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults
