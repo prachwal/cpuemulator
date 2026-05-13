@@ -10,6 +10,13 @@ namespace CpuEmulator.Execution.Instructions;
 public class RetInstruction : IInstruction
 {
     /// <inheritdoc />
+    /// <summary>
+    /// Wykonuje instrukcję Ret - powraca z podprogramu, ściągając adres powrotu ze stosu.
+    /// </summary>
+    /// <param name="state">Aktualny stan CPU.</param>
+    /// <param name="instruction">Instrukcja do wykonania.</param>
+    /// <returns>Nowy stan CPU z adresem powrotu ze stosu jako nowym licznikiem programu.</returns>
+    /// <exception cref="StackUnderflowException">Rzucane, gdy stos jest pusty.</exception>
     public CpuState Execute(CpuState state, Instruction instruction)
     {
         if (state.Stack.Count == 0)

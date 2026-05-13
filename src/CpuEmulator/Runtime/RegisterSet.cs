@@ -13,7 +13,7 @@ public class RegisterSet : IRegisterSet
     /// <summary>
     /// Inicjalizuje nowy zestaw rejestrów o podanej liczbie rejestrów.
     /// </summary>
-    /// <param name="count">Liczba rejestrów.</param>
+    /// <param name="count">Liczba rejestrów. Domyślnie 4.</param>
     public RegisterSet(int count = 4)
     {
         _registers = new int[count];

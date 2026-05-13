@@ -23,7 +23,7 @@ public static class CpuFactory
     /// Tworzy nową instancję CPU z podanym rozmiarem pamięci.
     /// </summary>
     /// <param name="memorySize">Rozmiar pamięci w słowach.</param>
-    /// <returns>Nowa instancja <see cref="ICpu"/>.</returns>
+    /// <returns>Nowa instancja <see cref="ICpu"/> z pamięcią o podanym rozmiarze.</returns>
     public static ICpu CreateWithMemorySize(int memorySize)
     {
         var memory = new Runtime.Memory(memorySize);
@@ -49,7 +49,7 @@ public static class CpuFactory
     /// Tworzy nową instancję CPU z podaną liczbą rejestrów.
     /// </summary>
     /// <param name="registerCount">Liczba rejestrów.</param>
-    /// <returns>Nowa instancja <see cref="ICpu"/>.</returns>
+    /// <returns>Nowa instancja <see cref="ICpu"/> z podaną liczbą rejestrów.</returns>
     public static ICpu CreateWithRegisterCount(int registerCount)
     {
         var memory = new Runtime.Memory();

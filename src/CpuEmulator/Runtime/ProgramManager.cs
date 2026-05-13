@@ -31,7 +31,7 @@ public class ProgramManager : IRuntime
     public int StackCount => _stack.Count;
 
     /// <summary>
-    /// Ładuje program do zarządcy.
+    /// Ładuje program do zarządcy i resetuje stan wykonania.
     /// </summary>
     /// <param name="instructions">Kolekcja instrukcji do załadowania.</param>
     public void LoadProgram(IEnumerable<Instruction> instructions)
@@ -45,6 +45,7 @@ public class ProgramManager : IRuntime
     }
 
     /// <inheritdoc />
+    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy wartość jest poza zakresem [0, Program.Count].</exception>
     public void SetProgramCounter(int value)
     {
         if (value < 0 || value > _program.Count)
@@ -80,7 +81,7 @@ public class ProgramManager : IRuntime
     /// Wykonuje skok do podanego adresu.
     /// </summary>
     /// <param name="address">Adres skoku.</param>
-    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy adres jest poza zakresem.</exception>
+    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy adres jest poza zakresem [0, Program.Count).</exception>
     public void Jump(int address)
     {
         if (address < 0 || address >= _program.Count)
@@ -104,6 +105,7 @@ public class ProgramManager : IRuntime
     }
 
     /// <inheritdoc />
+    /// <exception cref="StackUnderflowException">Rzucane, gdy stos jest pusty.</exception>
     public int PopStack()
     {
         if (_stack.Count == 0)

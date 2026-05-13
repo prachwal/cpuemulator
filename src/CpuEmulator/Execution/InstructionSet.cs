@@ -35,7 +35,7 @@ public class InstructionSet
     /// </summary>
     /// <param name="opcode">Kod operacji.</param>
     /// <returns>Handler instrukcji.</returns>
-    /// <exception cref="InvalidOperationException">Rzucane, gdy handler nie jest zarejestrowany.</exception>
+    /// <exception cref="InvalidOperationException">Rzucane, gdy handler nie jest zarejestrowany dla podanego opcodu.</exception>
     public IInstruction Resolve(Opcode opcode)
     {
         if (_handlers.TryGetValue(opcode, out var handler))

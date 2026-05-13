@@ -17,7 +17,7 @@ public class Cpu : ICpu
     private CpuState _state;
 
     /// <summary>
-    /// Inicjalizuje nową instancję emulatora CPU.
+    /// Inicjalizuje nową instancję emulatora CPU z domyślną konfiguracją.
     /// </summary>
     public Cpu()
     {

@@ -1,3 +1,5 @@
+using CpuEmulator.Exceptions;
+
 namespace CpuEmulator.Abstractions;
 
 /// <summary>

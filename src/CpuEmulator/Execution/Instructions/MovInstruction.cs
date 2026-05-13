@@ -10,6 +10,13 @@ namespace CpuEmulator.Execution.Instructions;
 public class MovInstruction : IInstruction
 {
     /// <inheritdoc />
+    /// <summary>
+    /// Wykonuje instrukcję Mov - kopiuje wartość z jednego rejestru do drugiego.
+    /// </summary>
+    /// <param name="state">Aktualny stan CPU.</param>
+    /// <param name="instruction">Instrukcja do wykonania.</param>
+    /// <returns>Nowy stan CPU z zaktualizowanym rejestrem docelowym.</returns>
+    /// <exception cref="InvalidOperandException">Rzucane, gdy indeks rejestru źródłowego lub docelowego jest nieprawidłowy.</exception>
     public CpuState Execute(CpuState state, Instruction instruction)
     {
         if (instruction.Operand1 < 0 || instruction.Operand1 >= state.Registers.Count)

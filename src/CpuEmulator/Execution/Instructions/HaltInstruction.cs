@@ -9,6 +9,12 @@ namespace CpuEmulator.Execution.Instructions;
 public class HaltInstruction : IInstruction
 {
     /// <inheritdoc />
+    /// <summary>
+    /// Wykonuje instrukcję Halt - zatrzymuje wykonanie programu.
+    /// </summary>
+    /// <param name="state">Aktualny stan CPU.</param>
+    /// <param name="instruction">Instrukcja do wykonania.</param>
+    /// <returns>Nowy stan CPU z ustawioną flagą zatrzymania.</returns>
     public CpuState Execute(CpuState state, Instruction instruction)
     {
         return state.WithHalted(true);

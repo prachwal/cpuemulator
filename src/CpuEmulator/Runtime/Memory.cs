@@ -13,7 +13,7 @@ public class Memory : IMemory
     /// <summary>
     /// Inicjalizuje nową instancję pamięci o podanym rozmiarze.
     /// </summary>
-    /// <param name="size">Rozmiar pamięci w słowach.</param>
+    /// <param name="size">Rozmiar pamięci w słowach. Domyślnie 256.</param>
     public Memory(int size = 256)
     {
         _data = new int[size];

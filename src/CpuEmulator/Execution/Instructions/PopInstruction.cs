@@ -10,6 +10,14 @@ namespace CpuEmulator.Execution.Instructions;
 public class PopInstruction : IInstruction
 {
     /// <inheritdoc />
+    /// <summary>
+    /// Wykonuje instrukcję Pop - ściąga wartość ze stosu do rejestru.
+    /// </summary>
+    /// <param name="state">Aktualny stan CPU.</param>
+    /// <param name="instruction">Instrukcja do wykonania.</param>
+    /// <returns>Nowy stan CPU z wartością ściągniętą ze stosu do rejestru.</returns>
+    /// <exception cref="InvalidOperandException">Rzucane, gdy indeks rejestru jest nieprawidłowy.</exception>
+    /// <exception cref="StackUnderflowException">Rzucane, gdy stos jest pusty.</exception>
     public CpuState Execute(CpuState state, Instruction instruction)
     {
         if (instruction.Operand1 < 0 || instruction.Operand1 >= state.Registers.Count)

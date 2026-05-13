@@ -10,9 +10,9 @@ namespace CpuEmulator.Model;
 /// <param name="Registers">Zestaw rejestrów.</param>
 /// <param name="Memory">Pamięć.</param>
 /// <param name="Stack">Stos (kopia dla niemutowalności).</param>
-/// <param name="ProgramCounter">Licznik programu.</param>
-/// <param name="Flags">Flagi procesora.</param>
-/// <param name="IsHalted">Czy program został zatrzymany.</param>
+/// <param name="ProgramCounter">Licznik programu. Domyślnie 0.</param>
+/// <param name="Flags">Flagi procesora. Domyślnie nowy obiekt CpuFlags.</param>
+/// <param name="IsHalted">Czy program został zatrzymany. Domyślnie false.</param>
 public readonly record struct CpuState(
     IRegisterSet Registers,
     IMemory Memory,
@@ -26,7 +26,7 @@ public readonly record struct CpuState(
     /// </summary>
     /// <param name="index">Indeks rejestru.</param>
     /// <param name="value">Nowa wartość rejestru.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanym rejestrem.</returns>
     public CpuState WithRegister(int index, int value)
     {
         var newRegisters = new RegisterSet(Registers);
@@ -39,7 +39,7 @@ public readonly record struct CpuState(
     /// </summary>
     /// <param name="address">Adres pamięci.</param>
     /// <param name="value">Nowa wartość w pamięci.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowaną pamięcią.</returns>
     public CpuState WithMemory(int address, int value)
     {
         var newMemory = new Runtime.Memory(Memory);
@@ -51,28 +51,28 @@ public readonly record struct CpuState(
     /// Tworzy nowy stan z zadanym licznikiem programu.
     /// </summary>
     /// <param name="programCounter">Nowa wartość licznika programu.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanym licznikiem programu.</returns>
     public CpuState WithProgramCounter(int programCounter) => this with { ProgramCounter = programCounter };
 
     /// <summary>
     /// Tworzy nowy stan z zadanymi flagami.
     /// </summary>
     /// <param name="flags">Nowe flagi procesora.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanymi flagami.</returns>
     public CpuState WithFlags(CpuFlags flags) => this with { Flags = flags };
 
     /// <summary>
     /// Tworzy nowy stan z zadanym stanem zatrzymania.
     /// </summary>
     /// <param name="isHalted">Czy program jest zatrzymany.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanym stanem zatrzymania.</returns>
     public CpuState WithHalted(bool isHalted) => this with { IsHalted = isHalted };
 
     /// <summary>
     /// Tworzy nowy stan z wartością włożoną na stos.
     /// </summary>
     /// <param name="value">Wartość do włożenia na stos.</param>
-    /// <returns>Nowy stan CPU.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanym stosem.</returns>
     public CpuState WithPushedStack(int value)
     {
         var newStack = new Stack<int>(Stack);
@@ -83,7 +83,7 @@ public readonly record struct CpuState(
     /// <summary>
     /// Tworzy nowy stan z wartością ściągniętą ze stosu.
     /// </summary>
-    /// <returns>Nowy stan CPU i ściągnięta wartość.</returns>
+    /// <returns>Nowy stan CPU z zaktualizowanym stosem i ściągnięta wartość.</returns>
     /// <exception cref="StackUnderflowException">Rzucane, gdy stos jest pusty.</exception>
     public (CpuState NewState, int Value) WithPoppedStack()
     {

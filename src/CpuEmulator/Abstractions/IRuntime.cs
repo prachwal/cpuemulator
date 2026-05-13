@@ -1,19 +1,21 @@
+using CpuEmulator.Exceptions;
 using CpuEmulator.Model;
 
 namespace CpuEmulator.Abstractions;
 
 /// <summary>
 /// Interfejs dla środowiska wykonawczego CPU.
+/// Zarządza programem, licznikiem programu, stosem i flagami.
 /// </summary>
 public interface IRuntime
 {
     /// <summary>
-    /// Zwraca listę instrukcji programu.
+    /// Zwraca niezmienialną listę instrukcji programu.
     /// </summary>
     IReadOnlyList<Instruction> Program { get; }
 
     /// <summary>
-    /// Zwraca aktualną wartość licznika programu.
+    /// Zwraca aktualną wartość licznika programu (PC).
     /// </summary>
     int ProgramCounter { get; }
 
@@ -21,7 +23,7 @@ public interface IRuntime
     /// Ustawia wartość licznika programu.
     /// </summary>
     /// <param name="value">Nowa wartość licznika programu.</param>
-    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy wartość jest poza zakresem programu.</exception>
+    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy wartość jest poza zakresem [0, Program.Count].</exception>
     void SetProgramCounter(int value);
 
     /// <summary>
@@ -35,7 +37,7 @@ public interface IRuntime
     bool IsHalted { get; }
 
     /// <summary>
-    /// Zwraca flagi procesora.
+    /// Zwraca aktualne flagi procesora.
     /// </summary>
     CpuFlags Flags { get; }
 

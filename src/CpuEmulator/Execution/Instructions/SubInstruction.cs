@@ -10,6 +10,13 @@ namespace CpuEmulator.Execution.Instructions;
 public class SubInstruction : IInstruction
 {
     /// <inheritdoc />
+    /// <summary>
+    /// Wykonuje instrukcję Sub - odejmuje wartość drugiego rejestru od pierwszego i ustawia flagi.
+    /// </summary>
+    /// <param name="state">Aktualny stan CPU.</param>
+    /// <param name="instruction">Instrukcja do wykonania.</param>
+    /// <returns>Nowy stan CPU z zaktualizowanym rejestrem i flagami.</returns>
+    /// <exception cref="InvalidOperandException">Rzucane, gdy indeks rejestru źródłowego lub docelowego jest nieprawidłowy.</exception>
     public CpuState Execute(CpuState state, Instruction instruction)
     {
         if (instruction.Operand1 < 0 || instruction.Operand1 >= state.Registers.Count)

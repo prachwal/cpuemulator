@@ -25,7 +25,7 @@ public class CpuExecutor
     }
 
     /// <summary>
-    /// Wykonuje pojedynczy cykl rozkazowy.
+    /// Wykonuje pojedynczy cykl rozkazowy (fetch-decode-execute).
     /// </summary>
     /// <param name="state">Aktualny stan CPU.</param>
     /// <returns>Nowy stan CPU po wykonaniu instrukcji.</returns>
@@ -114,10 +114,10 @@ public class CpuExecutor
     }
 
     /// <summary>
-    /// Wykonuje program do zakończenia.
+    /// Wykonuje program do zakończenia (Halt lub koniec programu).
     /// </summary>
     /// <param name="initialState">Początkowy stan CPU.</param>
-    /// <returns>Końcowy stan CPU.</returns>
+    /// <returns>Końcowy stan CPU po zakończeniu wykonania.</returns>
     public CpuState Run(CpuState initialState)
     {
         var state = initialState;

@@ -17,27 +17,27 @@ public readonly record struct CpuFlags(
     /// Tworzy nowy zestaw flag z zadaną flagą zerową.
     /// </summary>
     /// <param name="zeroFlag">Nowa wartość flagi zerowej.</param>
-    /// <returns>Nowy zestaw flag.</returns>
+    /// <returns>Nowy zestaw flag z zaktualizowaną flagą zerową.</returns>
     public CpuFlags WithZeroFlag(bool zeroFlag) => this with { ZeroFlag = zeroFlag };
 
     /// <summary>
     /// Tworzy nowy zestaw flag z zadaną flagą przeniesienia.
     /// </summary>
     /// <param name="carryFlag">Nowa wartość flagi przeniesienia.</param>
-    /// <returns>Nowy zestaw flag.</returns>
+    /// <returns>Nowy zestaw flag z zaktualizowaną flagą przeniesienia.</returns>
     public CpuFlags WithCarryFlag(bool carryFlag) => this with { CarryFlag = carryFlag };
 
     /// <summary>
     /// Tworzy nowy zestaw flag z zadaną flagą przepełnienia.
     /// </summary>
     /// <param name="overflowFlag">Nowa wartość flagi przepełnienia.</param>
-    /// <returns>Nowy zestaw flag.</returns>
+    /// <returns>Nowy zestaw flag z zaktualizowaną flagą przepełnienia.</returns>
     public CpuFlags WithOverflowFlag(bool overflowFlag) => this with { OverflowFlag = overflowFlag };
 
     /// <summary>
     /// Tworzy nowy zestaw flag z zadaną flagą znaku.
     /// </summary>
     /// <param name="signFlag">Nowa wartość flagi znaku.</param>
-    /// <returns>Nowy zestaw flag.</returns>
+    /// <returns>Nowy zestaw flag z zaktualizowaną flagą znaku.</returns>
     public CpuFlags WithSignFlag(bool signFlag) => this with { SignFlag = signFlag };
 }

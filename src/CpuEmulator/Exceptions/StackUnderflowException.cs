@@ -17,4 +17,15 @@ public class StackUnderflowException : CpuException
     /// <param name="message">Komunikat o błędzie.</param>
     /// <param name="innerException">Wyjątek wewnętrzny.</param>
     public StackUnderflowException(string message, Exception innerException) : base(message, innerException) { }
+
+    /// <summary>
+    /// Inicjalizuje nowy wyjątek StackUnderflowException z kontekstem licznika programu.
+    /// </summary>
+    /// <param name="message">Komunikat o błędzie.</param>
+    /// <param name="innerException">Wyjątek wewnętrzny.</param>
+    /// <param name="programCounter">Wartość licznika programu, przy którym wystąpił błąd.</param>
+    public StackUnderflowException(string message, Exception innerException, int? programCounter) : base(message, innerException)
+    {
+        ProgramCounter = programCounter;
+    }
 }
