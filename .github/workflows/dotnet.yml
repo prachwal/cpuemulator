@@ -21,42 +21,41 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj
+        run: dotnet restore CpuEmulator.sln
 
-       - name: Test with coverage
-         run: dotnet test tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory "${{ github.workspace }}/TestResults" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura,json /p:CoverletOutput="${{ github.workspace }}/TestResults/coverage"
+      - name: Build
+        run: dotnet build CpuEmulator.sln --configuration Release --no-restore
+
+      - name: Test with coverage
+        run: >-
+          dotnet test tests/CpuEmulator.Tests/CpuEmulator.Tests.csproj
+          --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory "${{ github.workspace }}/TestResults"
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput="${{ github.workspace }}/TestResults/coverage"
+          /p:Threshold=80
+          /p:ThresholdType=line
 
       - name: List test results
         if: always()
-        run: find "${{ github.workspace }}" -name "*.trx" -print
+        run: find "${{ github.workspace }}" -name "*.trx" -o -name "*.xml" -print
 
-       - name: Publish test results
-         uses: dorny/test-reporter@v1
-         if: always()
-         with:
-           name: dotnet-tests
-           path: TestResults/*.trx
-           reporter: dotnet-trx
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: dotnet-tests
+          path: TestResults/*.trx
+          reporter: dotnet-trx
 
-       - name: Publish coverage report
-         uses: dorny/test-reporter@v1
-         if: always()
-         with:
-           name: dotnet-coverage
-           path: TestResults/coverage.cobertura.xml
-           reporter: dotnet-cobertura
-
-       - name: Check coverage threshold
-         run: |
-           # Parse coverage percentage from JSON file
-           COVERAGE=$(grep -oP '"Percent":\s*\K[0-9.]+' TestResults/coverage/coverage.json | head -1)
-           echo "Coverage: $COVERAGE%"
-           # Convert to integer for comparison
-           COVERAGE_INT=$(echo "$COVERAGE" | cut -d. -f1)
-           if [ "$COVERAGE_INT" -lt 80 ]; then
-             echo "Coverage is below 80%!"
-             exit 1
-           fi
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-results
+          path: TestResults/coverage.cobertura.xml
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
