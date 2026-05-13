@@ -32,6 +32,10 @@ public class CpuExecutor
     /// <exception cref="CpuException">Rzucane, gdy wystąpi błąd podczas wykonania instrukcji.</exception>
     public CpuState ExecuteCycle(CpuState state)
     {
+        // Synchronizuj ProgramManager z stanem na początku cyklu
+        _programManager.SetProgramCounter(state.ProgramCounter);
+        _programManager.SetFlags(state.Flags);
+        
         if (_programManager.IsHalted || _programManager.ProgramCounter >= _programManager.Program.Count)
         {
             return state.WithHalted(true);
