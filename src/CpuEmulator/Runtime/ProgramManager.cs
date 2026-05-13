@@ -80,9 +80,10 @@ public class ProgramManager : IRuntime
     /// Wykonuje skok do podanego adresu.
     /// </summary>
     /// <param name="address">Adres skoku.</param>
+    /// <exception cref="ProgramCounterOutOfRangeException">Rzucane, gdy adres jest poza zakresem.</exception>
     public void Jump(int address)
     {
-        if (address < 0 || address > _program.Count)
+        if (address < 0 || address >= _program.Count)
         {
             throw new ProgramCounterOutOfRangeException(
                 $"Jump address {address} is out of range [0, {_program.Count}).");

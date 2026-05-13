@@ -86,12 +86,43 @@ public class Cpu : ICpu
         }
         catch (Exceptions.CpuException ex)
         {
-            throw new Exceptions.InvalidOperandException(
-                $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
-                ex)
+            // Zachowaj oryginalny typ wyjątku, dodaj kontekst
+            if (ex is Exceptions.StackUnderflowException stackEx)
             {
-                ProgramCounter = _state.ProgramCounter
-            };
+                throw new Exceptions.StackUnderflowException(
+                    $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _state.ProgramCounter
+                };
+            }
+            else if (ex is Exceptions.ProgramCounterOutOfRangeException pcEx)
+            {
+                throw new Exceptions.ProgramCounterOutOfRangeException(
+                    $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _state.ProgramCounter
+                };
+            }
+            else if (ex is Exceptions.InvalidOperandException opEx)
+            {
+                throw new Exceptions.InvalidOperandException(
+                    $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _state.ProgramCounter
+                };
+            }
+            else
+            {
+                throw new Exceptions.InvalidOperandException(
+                    $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _state.ProgramCounter
+                };
+            }
         }
     }
 

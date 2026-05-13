@@ -47,6 +47,13 @@ public class CpuExecutor
         {
             var newState = _instructionSet.Resolve(instruction.Opcode).Execute(state, instruction);
             
+            // Walidacja ProgramCounter po wykonaniu instrukcji
+            if (newState.ProgramCounter < 0 || newState.ProgramCounter > _programManager.Program.Count)
+            {
+                throw new Exceptions.ProgramCounterOutOfRangeException(
+                    $"ProgramCounter {newState.ProgramCounter} is out of range [0, {_programManager.Program.Count}).");
+            }
+            
             // Synchronizuj ProgramManager z nowym stanem
             _programManager.SetProgramCounter(newState.ProgramCounter);
             _programManager.SetFlags(newState.Flags);
@@ -62,12 +69,43 @@ public class CpuExecutor
         }
         catch (Exceptions.CpuException ex)
         {
-            throw new Exceptions.InvalidOperandException(
-                $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
-                ex)
+            // Zachowaj oryginalny typ wyjątku, dodaj kontekst
+            if (ex is Exceptions.StackUnderflowException stackEx)
             {
-                ProgramCounter = _programManager.ProgramCounter
-            };
+                throw new Exceptions.StackUnderflowException(
+                    $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _programManager.ProgramCounter
+                };
+            }
+            else if (ex is Exceptions.ProgramCounterOutOfRangeException pcEx)
+            {
+                throw new Exceptions.ProgramCounterOutOfRangeException(
+                    $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _programManager.ProgramCounter
+                };
+            }
+            else if (ex is Exceptions.InvalidOperandException opEx)
+            {
+                throw new Exceptions.InvalidOperandException(
+                    $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _programManager.ProgramCounter
+                };
+            }
+            else
+            {
+                throw new Exceptions.InvalidOperandException(
+                    $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
+                    ex)
+                {
+                    ProgramCounter = _programManager.ProgramCounter
+                };
+            }
         }
     }
 

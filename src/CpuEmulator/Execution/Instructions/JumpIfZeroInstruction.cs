@@ -1,4 +1,5 @@
 using CpuEmulator.Abstractions;
+using CpuEmulator.Exceptions;
 using CpuEmulator.Model;
 
 namespace CpuEmulator.Execution.Instructions;
@@ -13,6 +14,7 @@ public class JumpIfZeroInstruction : IInstruction
     {
         if (state.Flags.ZeroFlag)
         {
+            // Walidacja jest wykonywana w ProgramManager.Jump
             return state.WithProgramCounter(instruction.Operand1);
         }
         return state;

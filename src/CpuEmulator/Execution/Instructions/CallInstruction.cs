@@ -1,4 +1,5 @@
 using CpuEmulator.Abstractions;
+using CpuEmulator.Exceptions;
 using CpuEmulator.Model;
 
 namespace CpuEmulator.Execution.Instructions;
@@ -11,8 +12,7 @@ public class CallInstruction : IInstruction
     /// <inheritdoc />
     public CpuState Execute(CpuState state, Instruction instruction)
     {
-        // Adres skoku jest sprawdzany w ProgramManager.Jump
-        // Tutaj wkładamy aktualny PC na stos
+        // Wkładamy aktualny PC na stos i ustawiamy nowy PC
         return state.WithPushedStack(state.ProgramCounter).WithProgramCounter(instruction.Operand1);
     }
 }

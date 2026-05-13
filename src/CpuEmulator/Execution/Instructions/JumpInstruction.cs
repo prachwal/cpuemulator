@@ -12,7 +12,8 @@ public class JumpInstruction : IInstruction
     /// <inheritdoc />
     public CpuState Execute(CpuState state, Instruction instruction)
     {
-        // Adres skoku jest sprawdzany w ProgramManager.Jump
+        // Walidacja jest wykonywana w ProgramManager.Jump
+        // Tutaj tylko zwracamy stan z nowym PC
         return state.WithProgramCounter(instruction.Operand1);
     }
 }
