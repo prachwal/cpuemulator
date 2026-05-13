@@ -6,7 +6,7 @@ namespace CpuEmulator.Tests;
 [TestClass]
 public class CpuTests
 {
-    [TestMethod]
+     [TestMethod]
     public void Add_ShouldSumRegisters()
     {
         var cpu = new CpuEmulator.Cpu();
@@ -21,10 +21,10 @@ public class CpuTests
 
         cpu.Run();
 
-        cpu.Registers[0].Should().Be(5);
+        cpu.GetState().Registers.GetRegister(0).Should().Be(5);
     }
 
-    [TestMethod]
+     [TestMethod]
     public void Store_ShouldWriteToMemory()
     {
         var cpu = new CpuEmulator.Cpu();
@@ -38,10 +38,10 @@ public class CpuTests
 
         cpu.Run();
 
-        cpu.Memory[20].Should().Be(7);
+        cpu.GetState().Memory.Read(20).Should().Be(7);
     }
 
-    [TestMethod]
+     [TestMethod]
     public void JumpIfZero_ShouldJump()
     {
         var cpu = new CpuEmulator.Cpu();
@@ -60,6 +60,6 @@ public class CpuTests
 
         cpu.Run();
 
-        cpu.Registers[2].Should().Be(42);
+        cpu.GetState().Registers.GetRegister(2).Should().Be(42);
     }
 }

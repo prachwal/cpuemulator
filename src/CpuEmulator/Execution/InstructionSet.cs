@@ -1,5 +1,6 @@
 using CpuEmulator.Abstractions;
 using CpuEmulator.Exceptions;
+using CpuEmulator.Execution.Instructions;
 using CpuEmulator.Model;
 
 namespace CpuEmulator.Execution;

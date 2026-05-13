@@ -1,4 +1,6 @@
 using CpuEmulator.Abstractions;
+using CpuEmulator.Exceptions;
+using CpuEmulator.Runtime;
 
 namespace CpuEmulator.Model;
 
@@ -40,7 +42,7 @@ public readonly record struct CpuState(
     /// <returns>Nowy stan CPU.</returns>
     public CpuState WithMemory(int address, int value)
     {
-        var newMemory = new Memory(Memory);
+        var newMemory = new Runtime.Memory(Memory);
         newMemory.Write(address, value);
         return this with { Memory = newMemory };
     }

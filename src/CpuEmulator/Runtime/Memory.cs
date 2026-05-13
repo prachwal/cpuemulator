@@ -53,3 +53,7 @@ public class Memory : IMemory
         }
         _data[address] = value;
     }
+
+    /// <inheritdoc />
+    public int Size => _data.Length;
+}

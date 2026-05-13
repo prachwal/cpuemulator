@@ -1,6 +1,7 @@
 using CpuEmulator;
+using CpuEmulator.Abstractions;
 
-var cpu = new Cpu();
+ICpu cpu = CpuFactory.Create();
 
 cpu.LoadProgram(new List<Instruction>
 {
@@ -13,4 +14,4 @@ cpu.LoadProgram(new List<Instruction>
 
 cpu.Run();
 
-Console.WriteLine($"Result: {cpu.Memory[10]}");
+Console.WriteLine($"Result: {cpu.GetState().Memory.Read(10)}");

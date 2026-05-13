@@ -1,123 +1,149 @@
+using CpuEmulator.Abstractions;
+using CpuEmulator.Exceptions;
+using CpuEmulator.Execution;
+using CpuEmulator.Model;
+using CpuEmulator.Runtime;
+
 namespace CpuEmulator;
 
-public class Cpu
+/// <summary>
+/// Emulator CPU - główna klasa zarządzająca wykonaniem programu.
+/// </summary>
+public class Cpu : ICpu
 {
-    private readonly Stack<int> _stack = new();
+    private readonly ProgramManager _programManager;
+    private readonly CpuExecutor _executor;
+    private readonly InstructionSet _instructionSet;
+    private CpuState _state;
 
-    public int[] Registers { get; } = new int[4];
+    /// <summary>
+    /// Inicjalizuje nową instancję emulatora CPU.
+    /// </summary>
+    public Cpu()
+    {
+        var memory = new Runtime.Memory();
+        var registers = new Runtime.RegisterSet();
+        var stack = new Stack<int>();
+        
+        _programManager = new ProgramManager();
+        _instructionSet = new InstructionSet();
+        _executor = new CpuExecutor(_programManager, _instructionSet);
+        
+            _state = new Model.CpuState(
+                registers,
+                memory,
+                stack,
+            ProgramCounter: 0,
+            Flags: new CpuFlags(),
+            IsHalted: false);
+    }
 
-    public int[] Memory { get; } = new int[256];
+    /// <summary>
+    /// Inicjalizuje nową instancję emulatora CPU z podanymi komponentami.
+    /// </summary>
+    /// <param name="programManager">Zarządca programu.</param>
+    /// <param name="executor">Wykonawca CPU.</param>
+    /// <param name="instructionSet">Zestaw instrukcji.</param>
+    /// <param name="initialState">Początkowy stan CPU.</param>
+    public Cpu(
+        ProgramManager programManager,
+        CpuExecutor executor,
+        InstructionSet instructionSet,
+        CpuState initialState)
+    {
+        _programManager = programManager;
+        _executor = executor;
+        _instructionSet = instructionSet;
+        _state = initialState;
+    }
 
-    public int ProgramCounter { get; private set; }
-
-    public bool ZeroFlag { get; private set; }
-
-    public bool Halted { get; private set; }
-
-    public List<Instruction> Program { get; } = new();
-
+    /// <inheritdoc />
     public void LoadProgram(IEnumerable<Instruction> instructions)
     {
-        Program.Clear();
-        Program.AddRange(instructions);
-        ProgramCounter = 0;
-        Halted = false;
+        _programManager.LoadProgram(instructions);
+        _state = _state with
+        {
+            ProgramCounter = 0,
+            IsHalted = false,
+            Flags = new Model.CpuFlags()
+        };
     }
 
+    /// <inheritdoc />
     public void Run()
     {
-        while (!Halted && ProgramCounter < Program.Count)
-        {
-            Step();
-        }
+        _state = _executor.Run(_state);
     }
 
+    /// <inheritdoc />
     public void Step()
     {
-        var instruction = Program[ProgramCounter];
-        ProgramCounter++;
-
-        switch (instruction.Opcode)
+        try
         {
-            case Opcode.Nop:
-                break;
-
-            case Opcode.LoadImmediate:
-                Registers[instruction.Operand1] = instruction.Operand2;
-                break;
-
-            case Opcode.Mov:
-                Registers[instruction.Operand1] = Registers[instruction.Operand2];
-                break;
-
-            case Opcode.Load:
-                Registers[instruction.Operand1] = Memory[instruction.Operand2];
-                break;
-
-            case Opcode.Store:
-                Memory[instruction.Operand2] = Registers[instruction.Operand1];
-                break;
-
-            case Opcode.Add:
-                Registers[instruction.Operand1] += Registers[instruction.Operand2];
-                ZeroFlag = Registers[instruction.Operand1] == 0;
-                break;
-
-            case Opcode.Sub:
-                Registers[instruction.Operand1] -= Registers[instruction.Operand2];
-                ZeroFlag = Registers[instruction.Operand1] == 0;
-                break;
-
-            case Opcode.Inc:
-                Registers[instruction.Operand1]++;
-                break;
-
-            case Opcode.Dec:
-                Registers[instruction.Operand1]--;
-                break;
-
-            case Opcode.Cmp:
-                ZeroFlag = Registers[instruction.Operand1] == Registers[instruction.Operand2];
-                break;
-
-            case Opcode.Jump:
-                ProgramCounter = instruction.Operand1;
-                break;
-
-            case Opcode.JumpIfZero:
-                if (ZeroFlag)
-                {
-                    ProgramCounter = instruction.Operand1;
-                }
-                break;
-
-            case Opcode.JumpIfNotZero:
-                if (!ZeroFlag)
-                {
-                    ProgramCounter = instruction.Operand1;
-                }
-                break;
-
-            case Opcode.Push:
-                _stack.Push(Registers[instruction.Operand1]);
-                break;
-
-            case Opcode.Pop:
-                Registers[instruction.Operand1] = _stack.Pop();
-                break;
-
-            case Opcode.Call:
-                _stack.Push(ProgramCounter);
-                ProgramCounter = instruction.Operand1;
-                break;
-
-            case Opcode.Ret:
-                ProgramCounter = _stack.Pop();
-                break;
-
-            case Opcode.Halt:
-                Halted = true;
-                break;
+            _state = _executor.ExecuteCycle(_state);
+            // Synchronizuj ProgramCounter z ProgramManager
+            _programManager.SetProgramCounter(_state.ProgramCounter);
+        }
+        catch (Exceptions.CpuException ex)
+        {
+            throw new Exceptions.InvalidOperandException(
+                $"Error executing instruction at PC={_state.ProgramCounter}: {ex.Message}",
+                ex)
+            {
+                ProgramCounter = _state.ProgramCounter
+            };
         }
     }
+
+    /// <inheritdoc />
+    public void Reset()
+    {
+        _programManager.LoadProgram(Array.Empty<Instruction>());
+        _state = new Model.CpuState(
+            new Runtime.RegisterSet(),
+            new Runtime.Memory(),
+            new Stack<int>(),
+            ProgramCounter: 0,
+            Flags: new CpuFlags(),
+            IsHalted: false);
+    }
+
+    /// <inheritdoc />
+    public CpuState GetState() => _state;
+
+    /// <summary>
+    /// Zwraca zestaw rejestrów (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use GetState().Registers instead.")]
+    public IRegisterSet Registers => _state.Registers;
+
+    /// <summary>
+    /// Zwraca pamięć (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use GetState().Memory instead.")]
+    public IMemory Memory => _state.Memory;
+
+    /// <summary>
+    /// Zwraca licznik programu (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use GetState().ProgramCounter instead.")]
+    public int ProgramCounter => _state.ProgramCounter;
+
+    /// <summary>
+    /// Zwraca flagę ZeroFlag (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use GetState().Flags.ZeroFlag instead.")]
+    public bool ZeroFlag => _state.Flags.ZeroFlag;
+
+    /// <summary>
+    /// Zwraca informację, czy program został zatrzymany (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use GetState().IsHalted instead.")]
+    public bool Halted => _state.IsHalted;
+
+    /// <summary>
+    /// Zwraca program (dla wstecznej kompatybilności).
+    /// </summary>
+    [Obsolete("Use ProgramManager.Program instead.")]
+    public List<Instruction> Program => _programManager.Program.ToList();
 }

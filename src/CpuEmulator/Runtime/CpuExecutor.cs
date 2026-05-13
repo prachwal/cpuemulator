@@ -1,4 +1,5 @@
 using CpuEmulator.Abstractions;
+using CpuEmulator.Execution;
 using CpuEmulator.Exceptions;
 using CpuEmulator.Model;
 
@@ -45,16 +46,23 @@ public class CpuExecutor
         try
         {
             var newState = _instructionSet.Resolve(instruction.Opcode).Execute(state, instruction);
-            _programManager.Advance();
-
-            // Synchronizuj flagi z ProgramManager
+            
+            // Synchronizuj ProgramManager z nowym stanem
+            _programManager.SetProgramCounter(newState.ProgramCounter);
             _programManager.SetFlags(newState.Flags);
+            
+            // Jeśli nie było skoku, zaawansuj PC
+            if (newState.ProgramCounter == state.ProgramCounter)
+            {
+                _programManager.Advance();
+                newState = newState.WithProgramCounter(_programManager.ProgramCounter);
+            }
 
             return newState;
         }
-        catch (CpuException ex)
+        catch (Exceptions.CpuException ex)
         {
-            throw new CpuException(
+            throw new Exceptions.InvalidOperandException(
                 $"Error executing {instruction.Opcode} at PC={_programManager.ProgramCounter}: {ex.Message}",
                 ex)
             {

@@ -1,3 +1,5 @@
+using CpuEmulator.Model;
+
 namespace CpuEmulator.Abstractions;
 
 /// <summary>
